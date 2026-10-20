@@ -8,17 +8,25 @@
 class Sprite {  // could derive from sf::Drawable if you're willing to pay for a vptr, but not
                 // necessary.
 public:
-    Sprite(const sf::Texture& texture) {
-        // TODO
-    }
+    Sprite(const sf::Texture& texture)
+        : mTexture(&texture),
+          mVertexArray(sf::PrimitiveType::Triangles, 6),
+          mMinPointTex(0.f, 0.f),
+          mMaxPointTex(sf::Vector2f(texture.getSize())),
+          mOrigin(0.f, 0.f) {}
 
     Sprite(const sf::Texture& texture, const sf::Vector2f& texMinPoint,
-           const sf::Vector2f& texMaxPoint) {
-        // TODO
-    }
+           const sf::Vector2f& texMaxPoint)
+        : mTexture(&texture),
+          mVertexArray(sf::PrimitiveType::Triangles, 6),
+          mMinPointTex(texMinPoint),
+          mMaxPointTex(texMaxPoint),
+          mOrigin(0.f, 0.f) {}
 
     void draw(sf::RenderTarget& target, sf::RenderStates states) const {
-        // TODO
+        recomputeVertexArray();
+        states.texture = mTexture;
+        target.draw(mVertexArray, states);
     }
 
     sf::Vector2f& position() { return mTransform.translation; }
@@ -34,12 +42,27 @@ private:
     //     ranging from [0, 1] in both dimensions.
     //   - the next 3 correspond to the vertices of the bottom-right triangle. of the default
     //     rectangle.
-    static constexpr std::array<sf::Vector2f, 6> DEFAULT_VERTICES = {};  // TODO
+    static constexpr std::array<sf::Vector2f, 6> DEFAULT_VERTICES = {
+        sf::Vector2f(0.f, 0.f), sf::Vector2f(0.f, 1.f), sf::Vector2f(1.f, 0.f),
+        sf::Vector2f(1.f, 0.f), sf::Vector2f(0.f, 1.f), sf::Vector2f(1.f, 1.f),
+    };
 
     // if mTexture is valid, recomputes the positions and coords of sf::Vertex for each
     // of 6 possible entries in mVertexArray.
     void recomputeVertexArray() const {
-        // TODO
+        if (!mTexture) {
+            return;
+        }
+        sf::Vector2f smallRectSize = mMaxPointTex - mMinPointTex;
+        for (size_t i = 0; i < DEFAULT_VERTICES.size(); ++i) {
+            sf::Vector2f u = DEFAULT_VERTICES[i];
+            sf::Vector2f texCoordinate = mMinPointTex + u * smallRectSize;
+            sf::Vector2f localPosition = u * smallRectSize - mOrigin;
+            sf::Vector2f screenPosition = mTransform.applyPoint(localPosition);
+
+            mVertexArray[i].texCoords = texCoordinate;
+            mVertexArray[i].position = screenPosition;
+        }
     }
 
     const sf::Texture* mTexture;

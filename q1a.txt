@@ -1,0 +1,11 @@
+With the y-axis pointing down, increasing theta will perform a clockwise 
+rotation, as the angle is measured from the x-axis to the y-axis.
+If the y-axis points up, it will be counterclockwise.
+
+For example, a theta of 90 degrees applied to the point (1, 0), which maps to (0, 1):
+x' = cos θ · 1 − sin θ · 0 = 0
+y' = sin θ · 1 + cos θ · 0 = 1
+This will be directly below the origin for the y-axis down, and
+directly above it for y-axis up.
+
+

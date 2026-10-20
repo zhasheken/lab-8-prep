@@ -1,0 +1,49 @@
+a)
+
+top left half triangle:
+from the top leftmost point, counterclockwise:
+(200,150), (200, 450), (600,150),
+
+bottom right half triangle:
+from the top rightmost point:
+(600,150), (200,450), (600,450)
+
+
+b)
+The top right (600,150) and bottom left (200,450) corners are stored twice
+in the method above. This results in memory usage of 12x4=48 bytes assuming each
+float is 4 bytes.
+
+We can instead store it using a vertex buffer and index buffer for example:
+0: (200,150)
+1: (200,450)
+2: (600,450)
+3: (600,150)
+
+and we can represent the triangles with the index buffer
+TL: 0, 1, 3
+BR: 3, 1, 2
+
+so in this example, the vertex buffer will take up 8x4 = 32 bytes
+and the index buffer will take up 6x4 = 24 bytes
+This is 56 bytes total, which is more than plainly storing the lists in part a).
+
+While this is more memory than the first approach, its efficiency will only
+increase with the amount of times a vertex is reused. 
+
+if we used doubles:
+the original approach: 12x8= 96 bytes
+
+buffer approach: 
+vertex buffer will take up 8x8 = 64 bytes
+index buffer will still take 24 bytes
+64 + 24 = 88
+
+The buffer approach is therefore more efficient when we are using doubles in this specific case.
+
+c)
+u = (500 − 200) / 400 = 300 / 400 = 0.75
+v = (301 − 150) / 300 = 151 / 300 = (approx.) 0.50333333333
+
+(0.75,0.503)
+
